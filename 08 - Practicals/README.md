@@ -17,20 +17,21 @@ I used an Ubuntu EC2 instance to install Vault and Terraform. I used two termina
 
 ### Practical Workflow
 
-1. Install HashiCorp Vault.
-2. Start the Vault development server.
-3. Enable KV v2 secrets engine.
-4. Store a secret in Vault.
-5. Enable AppRole authentication.
-6. Create a Terraform policy.
-7. Create an AppRole and generate credentials.
-8. Install Terraform.
-9. Configure AWS credentials.
-10. Connect Terraform with Vault.
-11. Retrieve secrets using Terraform.
-12. Provision an AWS EC2 instance using the retrieved secret.
-13. Verify the EC2 instance and its tags.
-14. Destroy the EC2 instance.
+1. Launch an EC2 instance.
+2. Install HashiCorp Vault.
+3. Start the Vault development server.
+4. Enable KV v2 secrets engine.
+5. Store a secret in Vault.
+6. Enable AppRole authentication.
+7. Create a Terraform policy.
+8. Create an AppRole and generate credentials.
+9. Install Terraform.
+10. Configure AWS credentials.
+11. Connect Terraform with Vault.
+12. Retrieve secrets using Terraform.
+13. Provision an AWS EC2 instance using the retrieved secret.
+14. Verify the EC2 instance and its tags.
+15. Destroy the EC2 instance.
 
 ---
 
@@ -55,6 +56,8 @@ http://127.0.0.1:8200
 ```
 
 **Security Group:** Port 8200 does not need to be publicly accessible for this setup because Terraform connects through localhost.
+
+**Source:** [AWS – Launch an EC2 Instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/LaunchingAndUsingInstances.html)
 
 ---
 
@@ -91,6 +94,8 @@ Verify the installation.
 ```bash
 vault version
 ```
+
+**Source:** [HashiCorp – Install Vault](https://developer.hashicorp.com/vault/install)
 
 ---
 
@@ -140,6 +145,10 @@ Confirm that Vault is unsealed:
 Sealed: false
 ```
 
+**Source:** [HashiCorp – Vault Development Server](https://developer.hashicorp.com/vault/docs/concepts/dev-server)
+
+**Command reference:** [Vault CLI Commands](https://developer.hashicorp.com/vault/docs/commands)
+
 ---
 
 ## 5. Enable KV Version 2 Secrets Engine
@@ -177,6 +186,10 @@ The KV v2 API path is:
 kv/data/test_secret
 ```
 
+**Source:** [HashiCorp – KV Secrets Engine](https://developer.hashicorp.com/vault/docs/secrets/kv)
+
+**Command reference:** [Vault KV CLI Commands](https://developer.hashicorp.com/vault/docs/commands/kv)
+
 ---
 
 ## 6. Enable AppRole Authentication
@@ -188,6 +201,8 @@ vault auth enable approle
 ```
 
 AppRole allows applications such as Terraform to authenticate with Vault using a Role ID and Secret ID.
+
+**Source:** [HashiCorp – AppRole Authentication](https://developer.hashicorp.com/vault/docs/auth/approle)
 
 ---
 
@@ -227,6 +242,11 @@ vault policy read terraform
 
 The policy grants read access to secrets stored under the KV v2 data path.
 
+**Sources:**
+
+- [HashiCorp – Vault Policies](https://developer.hashicorp.com/vault/docs/concepts/policies)
+- [HashiCorp – Vault Policy Commands](https://developer.hashicorp.com/vault/docs/commands/policy)
+
 ---
 
 ## 8. Create an AppRole
@@ -251,6 +271,8 @@ vault write -f auth/approle/role/terraform/secret-id
 
 Keep the Role ID and Secret ID private. These credentials are required for Terraform authentication.
 
+**Source:** [HashiCorp – AppRole Authentication](https://developer.hashicorp.com/vault/docs/auth/approle)
+
 ---
 
 ## 9. Install Terraform
@@ -271,6 +293,8 @@ terraform version
 ```
 
 My lab used Terraform v1.17.1.
+
+**Source:** [HashiCorp – Install Terraform](https://developer.hashicorp.com/terraform/install)
 
 ---
 
@@ -305,6 +329,12 @@ Region: us-east-1
 ```
 
 Never add AWS access keys directly to Terraform configuration files.
+
+**Sources:**
+
+- [AWS – Installing or Updating the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [AWS – Configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
+- [AWS – Get Caller Identity](https://docs.aws.amazon.com/cli/latest/reference/sts/get-caller-identity.html)
 
 ---
 
@@ -419,6 +449,14 @@ Retrieves the current Ubuntu 22.04 AMI ID for the selected region and architectu
 
 Creates an EC2 instance and uses the username retrieved from Vault as an instance tag.
 
+**Sources:**
+
+- [Terraform – AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [Terraform – Vault Provider](https://registry.terraform.io/providers/hashicorp/vault/latest/docs)
+- [Vault Provider – KV v2 Data Source](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/data-sources/kv_secret_v2)
+- [AWS Provider – SSM Parameter Data Source](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter)
+- [AWS Provider – EC2 Instance Resource](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance)
+
 ---
 
 ## 12. Create variables.tf
@@ -449,6 +487,11 @@ These variables allow Terraform to receive the AppRole credentials without hardc
 
 Save the file using `Esc`, `:wq` and `Enter`.
 
+**Sources:**
+
+- [Terraform – Input Variables](https://developer.hashicorp.com/terraform/language/values/variables)
+- [Terraform – Sensitive Data](https://developer.hashicorp.com/terraform/language/manage-sensitive-data)
+
 ---
 
 ## 13. Provide AppRole Credentials to Terraform
@@ -473,6 +516,11 @@ These environment variables remain available in the current shell session.
 
 If a new terminal is opened, export them again.
 
+**Sources:**
+
+- [Terraform – Environment Variables](https://developer.hashicorp.com/terraform/cli/config/environment-variables)
+- [Terraform – Input Variables](https://developer.hashicorp.com/terraform/language/values/variables)
+
 ---
 
 ## 14. Initialize Terraform
@@ -492,6 +540,8 @@ Terraform has been successfully initialized!
 ```
 
 Terraform also creates `.terraform.lock.hcl`, which records the selected provider versions.
+
+**Source:** [Terraform – terraform init](https://developer.hashicorp.com/terraform/cli/commands/init)
 
 ---
 
@@ -514,6 +564,11 @@ Expected output:
 ```text
 Success! The configuration is valid.
 ```
+
+**Sources:**
+
+- [Terraform – terraform fmt](https://developer.hashicorp.com/terraform/cli/commands/fmt)
+- [Terraform – terraform validate](https://developer.hashicorp.com/terraform/cli/commands/validate)
 
 ---
 
@@ -544,6 +599,11 @@ Changes to Outputs:
 
 This confirms that Terraform can retrieve the secret stored in Vault.
 
+**Sources:**
+
+- [Terraform Vault Provider – KV v2 Data Source](https://registry.terraform.io/providers/hashicorp/vault/latest/docs/data-sources/kv_secret_v2)
+- [Terraform – Plan Command](https://developer.hashicorp.com/terraform/cli/commands/plan)
+
 ---
 
 ## 17. Plan the EC2 Deployment
@@ -567,6 +627,8 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 ```
 
 This indicates that Terraform is ready to create one EC2 instance.
+
+**Source:** [Terraform – Plan Command](https://developer.hashicorp.com/terraform/cli/commands/plan)
 
 ---
 
@@ -604,6 +666,8 @@ vault_username = <sensitive>
 
 The instance is now created successfully.
 
+**Source:** [Terraform – Apply Command](https://developer.hashicorp.com/terraform/cli/commands/apply)
+
 ---
 
 ## 19. Verify the EC2 Instance
@@ -626,6 +690,8 @@ The expected tags are:
 The `Username` value comes from the secret retrieved from Vault.
 
 This confirms that Terraform successfully connected to Vault, retrieved the secret and used the retrieved value while creating an AWS resource.
+
+**Source:** [AWS – View EC2 Instance Details](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html)
 
 ---
 
@@ -654,6 +720,8 @@ Destroy complete! Resources: 1 destroyed.
 ```
 
 The EC2 instance created by Terraform is now removed.
+
+**Source:** [Terraform – Destroy Command](https://developer.hashicorp.com/terraform/cli/commands/destroy)
 
 ---
 
@@ -710,6 +778,12 @@ Never upload:
 - AppRole Secret IDs
 - AWS access keys
 - Actual credential files
+
+**Sources:**
+
+- [GitHub – Ignoring Files](https://docs.github.com/en/get-started/git-basics/ignoring-files)
+- [Terraform – Dependency Lock File](https://developer.hashicorp.com/terraform/language/files/dependency-lock)
+- [Terraform – Sensitive Data](https://developer.hashicorp.com/terraform/language/manage-sensitive-data)
 
 ---
 
