@@ -834,3 +834,16 @@ I also understood how Terraform uses state to track AWS resources and why correc
 The most useful part of this practical was troubleshooting IAM permission errors and recovering an existing EC2 resource without unnecessarily destroying and recreating it.
 
 **Status: Completed**
+
+## Where to Execute the Commands
+
+| Content | Where to Use It |
+|---|---|
+| `aws configure`, `terraform init`, `terraform plan`, `terraform apply` and other terminal commands | Ubuntu EC2 terminal |
+| `provider.tf`, `main.tf`, `variables.tf`, `output.tf`, `terraform.tfvars` | Create and edit using `vim` inside the Terraform project directory |
+| IAM JSON policy | AWS Console → IAM → Policies → Create policy → JSON editor |
+| `AmazonEC2FullAccess` | AWS Console → IAM → Users → Select Terraform user → Permissions → Add permissions → Attach policies directly |
+| Verify EC2 instance | AWS Console → EC2 → Instances |
+| GitHub documentation | GitHub → My-Terraform-Journey → `04 - Execution of Practicals` |
+
+**Important:** Always execute Terraform commands from inside the Terraform project directory.
