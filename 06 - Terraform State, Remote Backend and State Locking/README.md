@@ -1,4 +1,4 @@
-# Day 4 – Terraform State, Remote Backend and State Locking
+# Day 6 – Terraform State, Remote Backend and State Locking
 
 ## Introduction
 
